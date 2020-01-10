@@ -7,7 +7,7 @@ module.exports = (app, passport) => {
 
   // signing up
   app.post('/signup', (req, res, next) => {
-    passport.authenticate('local-signup', { session: false }, (err, user, info) => {
+    passport.authenticate('local-signup', { session: true }, (err, user, info) => {
       if (!user || err) {
         return res.status(403).json({ err: 'Email Address already registered.' });
       }
@@ -18,7 +18,7 @@ module.exports = (app, passport) => {
 
   // logging in
   app.post('/login', (req, res, next) => {
-    passport.authenticate('local-login', { session: false }, (err, user, info) => {
+    passport.authenticate('local-login', { session: true }, (err, user, info) => {
       // redirect if there was an issue with the login
       if (!user || err) {
         return res.status(403).json({ err: 'Incorrect username or password.' });

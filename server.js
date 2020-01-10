@@ -30,6 +30,7 @@ mongoose.set('useCreateIndex', true);
 // Routes
 // TODO: add routes
 require('./routes/auth')(app, passport);
+require('./routes/user')(app, db);
 
 // start the server
 app.listen(PORT, () =>

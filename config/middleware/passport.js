@@ -20,40 +20,56 @@ module.exports = (passport, db) => {
         };
 
         // check to see if user already exists
-        db.User.findOne({ email }).then(user => {
-          // if an email was found already --> means email is used by someone
-          if (user) {
+        db.User.findOne({ email })
+          .then(user => {
+            // if an email was found already --> means email is used by someone
+            if (user) {
+              return done(null, false, {
+                message: 'That email is already taken'
+              });
+            }
+            // no user was found --> create a new user
+            else {
+              const hashedPassword = hashPassword(password);
+
+              // create a new user object
+              const newUser = {
+                email,
+                password: hashedPassword
+              };
+
+              // use sequelize to create the new user passing in the newUser object
+              db.User.create(newUser)
+                .then((newUser, created) => {
+                  // unsuccessful in creating user
+                  if (!newUser) {
+                    return done(null, false, {
+                      message: 'Unsuccessful in creating new user'
+                    });
+                  }
+                  // new user created successfully
+                  if (newUser) {
+                    return done(null, newUser, {
+                      message: 'User created successfully'
+                    });
+                  }
+                })
+                .catch(err => {
+                  console.log('Error in creating user:', err);
+
+                  return done(null, false, {
+                    message: 'Something went wrong with your signup'
+                  });
+                });
+            }
+          })
+          .catch(err => {
+            console.log('Error in locating user in db:', err);
+
             return done(null, false, {
-              message: 'That email is already taken'
+              message: 'Something went wrong with searching for user in db'
             });
-          }
-          // no user was found --> create a new user
-          else {
-            const hashedPassword = hashPassword(password);
-
-            // create a new user object
-            const newUser = {
-              email,
-              password: hashedPassword
-            };
-
-            // use sequelize to create the new user passing in the newUser object
-            db.User.create(newUser).then((newUser, created) => {
-              // unsuccessful in creating user
-              if (!newUser) {
-                return done(null, false, {
-                  message: 'Unsuccessful in creating new user'
-                });
-              }
-              // new user created successfully
-              if (newUser) {
-                return done(null, newUser, {
-                  message: 'User created successfully'
-                });
-              }
-            });
-          }
-        });
+          });
       }
     )
   );
@@ -90,13 +106,34 @@ module.exports = (passport, db) => {
             return done(null, user);
           })
           .catch(err => {
-            console.log('Error:', err);
+            console.log('Error in loggin in user:', err);
 
             return done(null, false, {
-              message: 'Something went wrong with your Signin'
+              message: 'Something went wrong with your login'
             });
           });
       }
     )
   );
+
+  // for sessions
+
+  //serialize
+  passport.serializeUser((user, done) => {
+    console.log('serializing user', user.id);
+    done(null, user.id);
+  });
+
+  // deserialize user
+  passport.deserializeUser((id, done) => {
+    db.User.findById(id)
+      .then(user => {
+        if (user) {
+          done(null, user);
+        }
+      })
+      .catch(err => {
+        done('Error deserializing user:', err);
+      });
+  });
 };

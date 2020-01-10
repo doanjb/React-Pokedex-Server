@@ -1,18 +1,42 @@
-const express = require('express');
-const User = require('../models/user');
-const router = express.Router();
+module.exports = (app, db) => {
+  // route to get the user's favorite pokemon
+  app.get('/user/favorites/:userId', (req, res) => {
+    db.User.findById({ _id: req.params.userId })
+      .then(user => {
+        res.status(200).json(user);
+      })
+      .catch(err => {
+        res.status(400).json(err);
+      });
+  });
 
-router.post('/', (req, res) => {
-  // Create a new user using req.body
-  User.create(req.body)
-    .then(function(dbUser) {
-      // If saved successfully, send the the new User document to the client
-      res.json(dbUser);
-    })
-    .catch(function(err) {
-      // If an error occurs, send the error to the client
-      res.json(err);
-    });
-});
+  // route to add to the user's favorite pokemon
+  app.put('/user/add/favorites/:userId', (req, res) => {
+    db.User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $addToSet: { favorites: req.body.pokemonId } },
+      { useFindAndModify: false }
+    )
+      .then(user => {
+        res.status(200).json(user);
+      })
+      .catch(err => {
+        res.status(400).json(err);
+      });
+  });
 
-module.exports = router;
+  // route to add to the user's favorite pokemon
+  app.put('/user/remove/favorites/:userId', (req, res) => {
+    db.User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $pull: { favorites: req.body.pokemonId } },
+      { useFindAndModify: false }
+    )
+      .then(user => {
+        res.status(200).json(user);
+      })
+      .catch(err => {
+        res.status(400).json(err);
+      });
+  });
+};

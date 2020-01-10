@@ -14,14 +14,7 @@ const UserSchema = mongoose.Schema({
     minlength: 6,
     required: true
   },
-  favorites: [
-    {
-      // Store ObjectIds in the array
-      type: mongoose.Schema.Types.ObjectId,
-      // The ObjectIds will refer to the ids in the Pokemon model
-      ref: 'Pokemon'
-    }
-  ]
+  favorites: [Number]
 });
 
 module.exports = mongoose.model('User', UserSchema);
