@@ -6,10 +6,9 @@ const db = require('./models');
 const passport = require('passport');
 const session = require('express-session');
 
-const PORT = process.env.PORT || 4000;
-
 // initialize express
 const app = express();
+const PORT = process.env.PORT || 4000;
 
 // middleware: body parser requests body as JSON
 app.use(express.urlencoded({ extended: true }));
@@ -30,8 +29,11 @@ mongoose.set('useCreateIndex', true);
 
 // Routes
 // TODO: add routes
+require('./routes/auth')(app, passport);
 
 // start the server
 app.listen(PORT, () =>
   console.log(`Server started on port ${PORT}. Visit http://localhost:${PORT}/`)
 );
+
+module.exports = app;

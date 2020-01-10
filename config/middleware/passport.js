@@ -73,7 +73,7 @@ module.exports = (passport, db) => {
           return bcrypt.compareSync(enteredPassword, hashedPassword);
         };
 
-        db.User.findOne({ email })
+        db.User.findOne({ email: email })
           .then(user => {
             if (!user) {
               return done(null, false, {
@@ -87,8 +87,7 @@ module.exports = (passport, db) => {
               });
             }
 
-            const userinfo = user.get();
-            return done(null, userinfo);
+            return done(null, user);
           })
           .catch(err => {
             console.log('Error:', err);
