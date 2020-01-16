@@ -1,10 +1,4 @@
 module.exports = (app, passport) => {
-  // app.get('/logout', (req, res) => {
-  //   req.session.destroy(err => {
-  //     res.redirect('/');
-  //   });
-  // });
-
   // signing up
   app.post('/signup', (req, res, next) => {
     passport.authenticate('local-signup', { session: true }, (err, user, info) => {
@@ -37,6 +31,6 @@ module.exports = (app, passport) => {
   // logging out
   app.get('/logout', (req, res) => {
     req.logout();
-    res.redirect('/login');
+    res.status(200).json({ data: 'Logout sucessful' });
   });
 };
