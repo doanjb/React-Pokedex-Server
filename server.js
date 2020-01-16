@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const jwt = require('jsonwebtoken'); // for tokens
 const db = require('./models');
 
 // passport
@@ -33,7 +34,7 @@ mongoose.set('useCreateIndex', true);
 
 // Routes
 // TODO: add routes
-require('./routes/auth')(app, passport);
+require('./routes/auth')(app, passport, jwt);
 require('./routes/user')(app, db);
 
 // start the server
